@@ -7,20 +7,35 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by sam on 6/26/16.
+ * Contains variables and methods for representing and manipulating a simple appointment book with an owner name and a collection of <code>Appointment</code>s
  */
 public class AppointmentBook<T extends AbstractAppointment> extends AbstractAppointmentBook {
 
+    /**
+     * Returns the collection of appointments in the appointment book
+     *
+     * @return Returns the <code>AppointmentBook</code>'s <code>appointments</code>
+     */
     @Override
     public Collection<T> getAppointments() {
        return this.appointments;
     }
 
+    /**
+     * Adds a new appointment to the book's collection of appointments
+     *
+     * @param newAppointment <code>Appointment</code> to add to the <code>AppointmentBook</code>
+     */
     @Override
     public void addAppointment(AbstractAppointment newAppointment) {
         this.appointments.add((T) newAppointment);
     }
 
+    /**
+     * Returns the name of the appointment book's owner
+     *
+     * @return Returns <code>ownerName</code> as a <code>String</code>
+     */
     @Override
     public String getOwnerName() {
         return this.ownerName;
