@@ -6,30 +6,38 @@ public class Appointment extends AbstractAppointment {
 
   @Override
   public String getBeginTimeString() {
-    return beginTime;
+    return startDate + " " + startTime;
   }
 
   @Override
   public String getEndTimeString() {
-    return endTime;
+    return this.endDate + " " + this.endTime;
   }
 
   @Override
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
-  public void setAppointment(String desc, String begin, String end) {
-    description = desc;
+  public void setAppointment(String desc, String startD, String startT, String endD, String endT) {
+    this.description = desc;
 
-    beginTime = begin;
+    this.startDate = startD;
 
-    endTime = end;
+    this.startTime = startT;
+
+    this.endDate = endD;
+
+    this.endTime = endT;
   }
 
-  private String description;
+  private String description = "not implemented";
 
-  private String beginTime;
+  private String startDate = "not implemented";
 
-  private String endTime;
+  private String startTime = "not implemented";
+
+  private String endDate = "not implemented";
+
+  private String endTime = "not implemented";
 }

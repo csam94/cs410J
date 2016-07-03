@@ -2,6 +2,8 @@ package edu.pdx.cs410J.csam;
 
 import edu.pdx.cs410J.AbstractAppointment;
 import edu.pdx.cs410J.AbstractAppointmentBook;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,24 +13,24 @@ public class AppointmentBook<T extends AbstractAppointment> extends AbstractAppo
 
     @Override
     public Collection<T> getAppointments() {
-       return appointments;
+       return this.appointments;
     }
 
     @Override
     public void addAppointment(AbstractAppointment newAppointment) {
-        appointments.add((T) newAppointment);
+        this.appointments.add((T) newAppointment);
     }
 
     @Override
     public String getOwnerName() {
-        return ownerName;
+        return this.ownerName;
     }
 
     public void setOwner(String owner) {
-        ownerName = owner;
+        this.ownerName = owner;
     }
 
-    private Collection<T> appointments;
+    private Collection<T> appointments = new ArrayList<>();
 
     private String ownerName;
 }
