@@ -4,8 +4,9 @@ import edu.pdx.cs410J.AbstractAppointment;
 import edu.pdx.cs410J.AbstractAppointmentBook;
 import edu.pdx.cs410J.AppointmentBookDumper;
 
-import java.io.PrintWriter;
-import java.io.IOException;
+import java.io.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * Created by sam on 7/6/16.
