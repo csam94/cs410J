@@ -1,8 +1,16 @@
 package edu.pdx.cs410J.csam;
 
 import edu.pdx.cs410J.AbstractAppointmentBook;
+import edu.pdx.cs410J.ParserException;
 
+import javax.swing.text.html.parser.Parser;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import java.io.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * Created by sam on 7/6/16.
@@ -15,12 +23,11 @@ public class Project2 {
 
         Class c = AbstractAppointmentBook.class;  // Refer to one of Dave's classes so that we can be sure it is on the classpath
 
-        AppointmentBook fileBook = new AppointmentBook(); //Appointment book to be created from reading a text file
-
         int ownerInd = 0;
         int descInd = 1;
         int dateInd = 2;
         int timeInd = 3;
+        int fileInd = 1;
 
         int dayDigits = 1;
 
@@ -30,6 +37,7 @@ public class Project2 {
 
         int printFlag = 0;
         int fileFlag = 0;
+        int missingFileFlag = 0;
 
         String startOrEnd = "start";
 
@@ -65,11 +73,12 @@ public class Project2 {
                 if (args[0].equals("-README") && args[1].equals("-print") || args[1].equals("-README") && args[0].equals("-print")) {
                     printReadme();
                 } else if (args[0].equals("-fileName")) {
+                    fileFlag = 1;
                     boolean check = new File(args[1]).exists();
                     if (!check) {
-                        System.err.println("File " + args[1] + " does not exist");
-                        System.exit(1);
+                        missingFileFlag = 1;
                     }
+                    fileInd = 1;
                 } else if ((args[0].equals("-print") && !args[1].equals("-README")) || (args[0].equals("-README") && !args[1].equals("-print"))) {
                     System.err.println("Invalid option: " + args[1] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
@@ -93,9 +102,11 @@ public class Project2 {
                 } else if (args[0].equals("-print") && args[1].equals("-fileName")) {
                     printFlag = 1;
                     fileFlag = 1;
+                    fileInd = 2;
                 } else if (args[0].equals("-fileName") && args[2].equals("-print")) {
                     printFlag = 1;
                     fileFlag = 1;
+                    fileInd = 1;
                 } else if (!args[0].equals("-README") && !args[0].equals("-print") && args[1].equals("-fileName")) {
                     System.err.println("Invalid option: " + args[0] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
@@ -139,14 +150,26 @@ public class Project2 {
 
             default:
                 //Extraneous arguments
-                if (args.length > 8) {
-                    System.err.println("Too many arguments/options. The correct format is: [-textFile file|-print|-README] <name> <description> <start date> <start time> <end date> <end time>");
-                    System.exit(1);
+                if (args.length > 10) {
+                    if (args[0].equals("-README")) {
+                        printReadme();
+                    } else {
+                        System.err.println("Too many arguments/options. The correct format is: [-textFile file|-print|-README] <name> <description> <start date> <start time> <end date> <end time>");
+                        System.exit(1);
+                    }
                 }
                 //Too few arguments
                 else if (args.length < 6) {
-                    System.err.println("Missing command line arguments. The correct format is: [-textFile file|-print|-README] <name> <description> <start date> <start time> <end date> <end time>");
-                    System.exit(1);
+                    if(args.length == 0) {
+                        System.err.println("Missing command line arguments. The correct format is: [-textFile file|-print|-README] <name> <description> <start date> <start time> <end date> <end time>");
+                        System.exit(1);
+                    }
+                    if (args[0].equals("-README")) {
+                        printReadme();
+                    } else {
+                        System.err.println("Missing command line arguments. The correct format is: [-textFile file|-print|-README] <name> <description> <start date> <start time> <end date> <end time>");
+                        System.exit(1);
+                    }
                 }
         }
 
@@ -378,19 +401,65 @@ public class Project2 {
             }
         }
 
-        AppointmentBook commandLineBook = new AppointmentBook(args[ownerInd]); //Appointment book to be created from command line arguments
-        Appointment commandLineAppointment = new Appointment(args[descInd], args[dateInd-2], args[timeInd-2], args[dateInd], args[timeInd]); //Appointment to be created from command line arguments
-        commandLineBook.addAppointment(commandLineAppointment);
+        if(fileFlag == 1 && !args[fileInd].equals(args[ownerInd])) {
+            System.err.println("Owner of appointment book file " + args[fileInd] + " is different than specified owner " + args[ownerInd]);
+            System.exit(1);
+        }
 
-        System.out.println("Appointment added for " + commandLineBook.getOwnerName());
+        AppointmentBook book = new AppointmentBook(args[ownerInd]); //Appointment book to be created from command line arguments
+        Appointment appointment = new Appointment(args[descInd], args[dateInd-2], args[timeInd-2], args[dateInd], args[timeInd]); //Appointment to be created from command line arguments
+        book.addAppointment(appointment);
 
         if(printFlag == 1) {
-            System.out.println(commandLineAppointment.toString());
+            System.out.println(appointment.toString());
         }
 
         if (fileFlag == 1) {
-            //Do stuff
+            if(missingFileFlag == 1) {
+                File file = new File(args[fileInd]);
+
+                try {
+                    file.createNewFile();
+                } catch(IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    TextParser parser = new TextParser();
+
+                    try {
+                        parser.parse();
+                    } catch(ParserException e) {
+                        e.printStackTrace();
+                    }
+                } catch(FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                try {
+                    TextParser parser = new TextParser(args[ownerInd]);
+
+                    try {
+                        parser.parse();
+                    } catch (ParserException e) {
+                        e.printStackTrace();
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            TextDumper dumper = new TextDumper();
+            
+            try {
+                dumper.dump(book);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
+        System.out.println("Appointment added for " + book.getOwnerName());
 
         System.exit(1);
     }

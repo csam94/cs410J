@@ -14,12 +14,19 @@ import java.util.*;
 public class TextParser implements AppointmentBookParser {
     
     //Constructors
+    public TextParser() throws FileNotFoundException{
+    }
+
     public TextParser(String fileName) throws FileNotFoundException{
         this.fileName = fileName;
     }
 
     @Override
     public AbstractAppointmentBook parse() throws ParserException {
+        if(fileName == null) {
+            return new AppointmentBook();
+        }
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
 
@@ -39,7 +46,7 @@ public class TextParser implements AppointmentBookParser {
                     
                     String description = appointmentDetails[0];
                     
-                    String[] startAndEnd = description.split(" until ");
+                    String[] startAndEnd = appointmentDetails[1].split(" until ");
                     
                     String[] start = startAndEnd[0].split(" ");
                     String[] end = startAndEnd[1].split(" ");
@@ -65,13 +72,13 @@ public class TextParser implements AppointmentBookParser {
 
                         //Date string too long or too short
                         if(bothDates[i].length() < 8 || bothDates[i].length() > 10) {
-                            System.err.println("Invalid " + startOrEnd + " date (Format is mm/dd/yyyy)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Format is mm/dd/yyyy)");
                             System.exit(1);
                         }
 
                         //Month is not represented by a number
                         if(!Character.isDigit(bothDates[i].charAt(0))) {
-                            System.err.println("Invalid " + startOrEnd + " date (Month is not represented by a number)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Month is not represented by a number)");
                             System.exit(1);
                         }
 
@@ -84,34 +91,34 @@ public class TextParser implements AppointmentBookParser {
 
                             //First digit of month is not 0 or 1
                             if(Character.getNumericValue(bothDates[i].charAt(0)) > 1) {
-                                System.err.println("Invalid " + startOrEnd + " date (First digit of month is not 0 or 1)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (First digit of month is not 0 or 1)");
                                 System.exit(1);
                             }
                             //First digit of month is 1, second digit is not 0, 1, or 2
                             else if(Character.getNumericValue(bothDates[i].charAt(0)) == 1 && Character.getNumericValue(bothDates[i].charAt(1)) > 2) {
-                                System.err.println("Invalid " + startOrEnd + " date (First digit of month is 1, second digit is not 0, 1, or 2)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (First digit of month is 1, second digit is not 0, 1, or 2)");
                                 System.exit(1);
                             }
                             //Month is 00
                             else if(Character.getNumericValue(bothDates[i].charAt(0)) != 1 && Character.getNumericValue(bothDates[i].charAt(1)) == 0) {
-                                System.err.println("Invalid " + startOrEnd + " date (Month is 00)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Month is 00)");
                                 System.exit(1);
                             }
                             //Month is not followed by forward slash "/"
                             else if(!Character.toString(bothDates[i].charAt(2)).equals("/")) {
-                                System.err.println("Invalid " + startOrEnd + " date (Month is not followed by forward slash)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Month is not followed by forward slash)");
                                 System.exit(1);
                             }
                         }
                         //Month is single-digit and not followed by forward slash "/"
                         else if(!Character.toString(bothDates[i].charAt(1)).equals("/")) {
-                            System.err.println("Invalid " + startOrEnd + " date (Month is single-digit and not followed by forward slash)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Month is single-digit and not followed by forward slash)");
                             System.exit(1);
                         }
 
                         //Day is not represented by a number
                         if(!Character.isDigit(bothDates[i].charAt(dayInd))) {
-                            System.err.println("Invalid " + startOrEnd + " date (Day is not represented by a number)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Day is not represented by a number)");
                             System.exit(1);
                         }
 
@@ -125,76 +132,76 @@ public class TextParser implements AppointmentBookParser {
 
                             //First digit of day is not 0, 1, 2, or 3
                             if(Character.getNumericValue(bothDates[i].charAt(dayInd)) > 3) {
-                                System.err.println("Invalid " + startOrEnd + " date (First digit of day is not 0, 1, 2, or 3)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (First digit of day is not 0, 1, 2, or 3)");
                                 System.exit(1);
                             }
                             //First digit of day is 3, second digit is not 0 or 1
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 3 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) > 1) {
-                                System.err.println("Invalid " + startOrEnd + " date (First digit of day is 3, second digit is not 0 or 1)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (First digit of day is 3, second digit is not 0 or 1)");
                                 System.exit(1);
                             }
                             //Day is 00
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 0 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 0) {
-                                System.err.println("Invalid " + startOrEnd + " date (Day is 00)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Day is 00)");
                                 System.exit(1);
                             }
                             //Day is Feb. 30
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 3 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 0
                                     && ((Character.getNumericValue(bothDates[i].charAt(0)) == 0 && Character.getNumericValue(bothDates[i].charAt(1)) == 2)
                                     || Character.getNumericValue(bothDates[i].charAt(0)) == 2)) {
-                                System.err.println("Invalid " + startOrEnd + " date (There is no Feb. 30)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (There is no Feb. 30)");
                                 System.exit(1);
                             }
                             //Day is Feb. 31
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 3 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 1
                                     && ((Character.getNumericValue(bothDates[i].charAt(0)) == 0 && Character.getNumericValue(bothDates[i].charAt(1)) == 2)
                                     || Character.getNumericValue(bothDates[i].charAt(0)) == 2)) {
-                                System.err.println("Invalid " + startOrEnd + " date (There is no Feb. 31)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (There is no Feb. 31)");
                                 System.exit(1);
                             }
                             //Day is Apr. 31
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 3 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 1
                                     && ((Character.getNumericValue(bothDates[i].charAt(0)) == 0 && Character.getNumericValue(bothDates[i].charAt(1)) == 4)
                                     || Character.getNumericValue(bothDates[i].charAt(0)) == 4)) {
-                                System.err.println("Invalid " + startOrEnd + " date (There is no Apr. 31)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (There is no Apr. 31)");
                                 System.exit(1);
                             }
                             //Day is Jun. 31
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 3 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 1
                                     && ((Character.getNumericValue(bothDates[i].charAt(0)) == 0 && Character.getNumericValue(bothDates[i].charAt(1)) == 6)
                                     || Character.getNumericValue(bothDates[i].charAt(0)) == 6)) {
-                                System.err.println("Invalid " + startOrEnd + " date (There is no Jun. 31)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (There is no Jun. 31)");
                                 System.exit(1);
                             }
                             //Day is Sep. 31
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 3 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 1
                                     && ((Character.getNumericValue(bothDates[i].charAt(0)) == 0 && Character.getNumericValue(bothDates[i].charAt(1)) == 9)
                                     || Character.getNumericValue(bothDates[i].charAt(0)) == 9)) {
-                                System.err.println("Invalid " + startOrEnd + " date (There is no Sep. 31)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (There is no Sep. 31)");
                                 System.exit(1);
                             }
                             //Day is Nov. 31
                             else if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 3 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 1
                                     && (Character.getNumericValue(bothDates[i].charAt(0)) == 1 && Character.getNumericValue(bothDates[i].charAt(1)) == 1)) {
-                                System.err.println("Invalid " + startOrEnd + " date (There is no Nov. 31)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (There is no Nov. 31)");
                                 System.exit(1);
                             }
                             //Day is not followed by forward slash "/"
                             else if(!Character.toString(bothDates[i].charAt(dayInd + 2)).equals("/")) {
-                                System.err.println("Invalid " + startOrEnd + " date (Day is not followed by forward slash)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Day is not followed by forward slash)");
                                 System.exit(1);
                             }
                         }
                         //Day is single-digit and not followed by forward slash "/"
                         else if(!Character.toString(bothDates[i].charAt(dayInd + 1)).equals("/")) {
-                            System.err.println("Invalid " + startOrEnd + " date (Day is single-digit and not followed by forward slash)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Day is single-digit and not followed by forward slash)");
                             System.exit(1);
                         }
 
                         //Year is not represented by a number
                         if(!Character.isDigit(bothDates[i].charAt(yearInd)) || !Character.isDigit(bothDates[i].charAt(yearInd + 1))
                                 || !Character.isDigit(bothDates[i].charAt(yearInd + 2)) || !Character.isDigit(bothDates[i].charAt(yearInd + 3))) {
-                            System.err.println("Invalid " + startOrEnd + " date (Year is not represented by a number)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Year is not represented by a number)");
                             System.exit(1);
                         }
 
@@ -203,19 +210,19 @@ public class TextParser implements AppointmentBookParser {
                                 && ((Character.getNumericValue(bothDates[i].charAt(0)) == 0 && Character.getNumericValue(bothDates[i].charAt(1)) == 2)
                                 || Character.getNumericValue(bothDates[i].charAt(0)) == 2)
                                 && Integer.parseInt(Character.toString(bothDates[i].charAt(yearInd + 2)) + Character.toString(bothDates[i].charAt(yearInd + 3))) % 4 != 0) {
-                            System.err.println("Invalid " + startOrEnd + " date (Day is Feb. 29, but year is not a leap year)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Day is Feb. 29, but year is not a leap year)");
                             System.exit(1);
                         }
 
                         //Time is too long or too short
                         if(bothTimes[i].length() < 4 || bothTimes[i].length() > 5) {
-                            System.err.println("Invalid " + startOrEnd + " time (Format is hh:mm)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Format is hh:mm)");
                             System.exit(1);
                         }
 
                         //Hour is not represented by a number
                         if(!Character.isDigit(bothTimes[i].charAt(0))) {
-                            System.err.println("Invalid " + startOrEnd + " time (Hour is not represented by a number)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Hour is not represented by a number)");
                             System.exit(1);
                         }
 
@@ -225,40 +232,40 @@ public class TextParser implements AppointmentBookParser {
 
                             //First digit of hour is not 1 or 2
                             if(Character.getNumericValue(bothTimes[i].charAt(0)) > 2 || Character.getNumericValue(bothTimes[i].charAt(0)) <= 0) {
-                                System.err.println("Invalid " + startOrEnd + " time (First digit of hour is not 1 or 2)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (First digit of hour is not 1 or 2)");
                                 System.exit(1);
                             }
                             //Hour is larger than 24
                             else if(Character.getNumericValue(bothTimes[i].charAt(0)) == 2 && Character.getNumericValue(bothTimes[i].charAt(1)) > 4) {
-                                System.err.println("Invalid " + startOrEnd + " time (Hour is larger than 24)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Hour is larger than 24)");
                                 System.exit(1);
                             }
                             //Hour is not followed by a colon ":"
                             else if(!Character.toString(bothTimes[i].charAt(2)).equals(":")) {
-                                System.err.println("Invalid " + startOrEnd + " time (Format is hh:mm)");
+                                System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Format is hh:mm)");
                                 System.exit(1);
                             }
                         }
                         //Hour is represented by 1 digit and is not followed by a colon ":"
                         else if(!Character.toString(bothTimes[i].charAt(1)).equals(":")) {
-                            System.err.println("Invalid " + startOrEnd + " time (Format is hh:mm)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Format is hh:mm)");
                             System.exit(1);
                         }
 
                         //Minute is not represented by a number
                         if(!Character.isDigit(bothTimes[i].charAt(minInd)) || !Character.isDigit(bothTimes[i].charAt(minInd + 1))) {
-                            System.err.println("Invalid " + startOrEnd + " time (Minute is not represented by a number)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Minute is not represented by a number)");
                             System.exit(1);
                         }
                         //Minute is larger than 60
                         else if(Character.getNumericValue(bothTimes[i].charAt(minInd)) == 6 && Character.getNumericValue(bothTimes[i].charAt(minInd + 1)) > 0) {
-                            System.err.println("Invalid " + startOrEnd + " time (Minute is larger than 60)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Minute is larger than 60)");
                             System.exit(1);
                         }
                         //Hour is 24 and minute is not 00
                         else if(Character.getNumericValue(bothTimes[i].charAt(0)) == 2 && Character.getNumericValue(bothTimes[i].charAt(1)) == 4
                                 && Character.getNumericValue(bothTimes[i].charAt(minInd)) != 0 && Character.getNumericValue(bothTimes[i].charAt(minInd + 1)) != 0) {
-                            System.err.println("Invalid " + startOrEnd + " time (Minute exceeds 24:00)");
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " time (Minute exceeds 24:00)");
                             System.exit(1);
                         }
 
@@ -288,6 +295,8 @@ public class TextParser implements AppointmentBookParser {
                     e.printStackTrace();
                 }
             }
+
+            return book;
         }
         catch(FileNotFoundException e) {
             e.printStackTrace();
@@ -296,5 +305,5 @@ public class TextParser implements AppointmentBookParser {
         return null;
     }
     
-    private String fileName;
+    private String fileName = null;
 }

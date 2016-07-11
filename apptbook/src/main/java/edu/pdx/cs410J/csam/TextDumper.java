@@ -15,9 +15,11 @@ public class TextDumper<T extends AbstractAppointment> implements AppointmentBoo
     public void dump(AbstractAppointmentBook book) throws IOException {
 
         try {
-            PrintWriter writer = new PrintWriter(book.getOwnerName(), "UTF-8");
+            PrintWriter writer = new PrintWriter(new FileOutputStream(new File(book.getOwnerName()), true));
+
+            //PrintWriter writer = new PrintWriter(book.getOwnerName(), "UTF-8");
             for (Object appointment : book.getAppointments()) {
-                writer.println(appointment.toString());
+                writer.append(appointment.toString() + "\n");
             }
 
             writer.close();
