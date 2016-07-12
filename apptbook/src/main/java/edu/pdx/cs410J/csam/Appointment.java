@@ -2,19 +2,38 @@ package edu.pdx.cs410J.csam;
 
 import edu.pdx.cs410J.AbstractAppointment;
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
-
 /**
  * Contains variables and methods for representing and manipulating a simple appointment with a description, start time, and end time
  */
 public class Appointment extends AbstractAppointment {
 
+  /**** Constructors ****/
+
+  /**
+   * Default constructor
+   */
   public Appointment() {
 
   }
 
+  /**
+   * Constructor for passing in <code>Appointment</code> information
+   *
+   * @param desc
+   * Appointment description
+   *
+   * @param startD
+   * Appointment start date
+   *
+   * @param startT
+   * Appointment start time
+   *
+   * @param endD
+   * Appointment end date
+   *
+   * @param endT
+   * Appointment end time
+   */
   public Appointment(String desc, String startD, String startT, String endD, String endT) {
     this.description = desc;
 
@@ -26,6 +45,8 @@ public class Appointment extends AbstractAppointment {
 
     this.endTime = endT;
   }
+
+  /**** Methods ****/
 
   /**
    * Returns the combination of the appointment's start date and start time as a single string
@@ -64,8 +85,8 @@ public class Appointment extends AbstractAppointment {
    * @param startD Appointment's start date
    * @param startT Appointment's start time
    * @param endD Appointment's end date
-     * @param endT Appointment's end time
-     */
+   * @param endT Appointment's end time
+   */
   public void setAppointment(String desc, String startD, String startT, String endD, String endT) {
     this.description = desc;
 

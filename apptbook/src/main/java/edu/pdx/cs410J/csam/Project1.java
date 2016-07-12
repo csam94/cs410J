@@ -5,12 +5,12 @@ import edu.pdx.cs410J.AbstractAppointmentBook;
 import static jdk.nashorn.internal.objects.Global.print;
 
 /**
- * The main class for the CS410J appointment book Project
+ * The main class for the CS410J appointment book Project 1
  */
 public class Project1 {
 
   /**
-   * The main method for the CS410J appointment book Project
+   * The main method for the CS410J appointment book Project 1
    * Handles command line parsing, error output, and adding an <code>Appointment</code> to an <code>AppointmentBook</code>
    *
    * @param args

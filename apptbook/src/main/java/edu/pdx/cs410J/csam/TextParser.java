@@ -5,22 +5,43 @@ import edu.pdx.cs410J.AbstractAppointmentBook;
 import edu.pdx.cs410J.ParserException;
 
 import java.io.*;
-import java.text.*;
 import java.util.*;
 
 /**
- * Created by sam on 7/6/16.
+ * Class containing a single method and a single variable to parse a text file for appointments in the format
+ * used by the <code>TextDumper</code> class and create new <code>Appointment</code>s and <code>AppointmentBook</code>s based on the parsed information
  */
 public class TextParser implements AppointmentBookParser {
     
-    //Constructors
-    public TextParser() throws FileNotFoundException{
+    /**** Constructors ****/
+
+    /**
+     * Default constructor
+     */
+    public TextParser() {
     }
 
-    public TextParser(String fileName) throws FileNotFoundException{
+    /**
+     * Constructor used to pass the name of a file to a <code>TextParser</code>
+     *
+     * @param fileName
+     * Name of the text file to parse
+     */
+    public TextParser(String fileName) {
         this.fileName = fileName;
     }
 
+    /**
+     * Parses a text file based on the format used by the <code>TextDumper</code> class.
+     * Each line of the text file should represent a single appointment (Description|Start Date|Start Time|End Date|End Time).
+     * File name should be the same as the <code>AppointmentBook</code> owner.
+     *
+     * @return
+     * Returns an <code>AppointmentBook</code> created with the information from the parsed text file.
+     * Returns an empty <code>AppointmentBook</code> if the specified file does not exist.
+     *
+     * @throws ParserException
+     */
     @Override
     public AbstractAppointmentBook parse() throws ParserException {
         if(fileName == null) {
@@ -42,23 +63,17 @@ public class TextParser implements AppointmentBookParser {
                 }
 
                 for(String s : appointments) {
-                    String[] appointmentDetails = s.split(" from ");
-                    
-                    String description = appointmentDetails[0];
-                    
-                    String[] startAndEnd = appointmentDetails[1].split(" until ");
-                    
-                    String[] start = startAndEnd[0].split(" ");
-                    String[] end = startAndEnd[1].split(" ");
-                    
-                    String startDate = start[0];
-                    String startTime = start[1];
-                    
-                    String endDate = end[0];
-                    String endTime = end[1];
-                    
-                    String[] bothDates = new String[] {start[0], end[0]};
-                    String[] bothTimes = new String[] {start[1], end[1]};
+                    String delimiter = "[|]+";
+                    String[] splitAppointment = s.split(delimiter);
+                    if(splitAppointment.length != 5) {
+                        System.err.println("Appointment in file " + fileName + " is malformed");
+                        System.exit(1);
+                    }
+
+                    String description = splitAppointment[0];
+
+                    String[] bothDates = new String[] {splitAppointment[1], splitAppointment[3]};
+                    String[] bothTimes = new String[] {splitAppointment[2], splitAppointment[4]};
                     
                     int dayDigits = 1;
 

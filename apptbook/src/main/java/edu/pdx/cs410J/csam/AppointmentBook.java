@@ -3,8 +3,6 @@ package edu.pdx.cs410J.csam;
 import edu.pdx.cs410J.AbstractAppointment;
 import edu.pdx.cs410J.AbstractAppointmentBook;
 
-import java.io.*;
-import java.text.*;
 import java.util.*;
 
 /**
@@ -12,13 +10,26 @@ import java.util.*;
  */
 public class AppointmentBook<T extends AbstractAppointment> extends AbstractAppointmentBook {
 
+    /**** Constructors ****/
+
+    /**
+     * Default constructor
+     */
     public AppointmentBook() {
 
     }
 
+    /**
+     * Constructor for passing in the <code>AppointmentBook</code> owner's name
+     *
+     * @param owner
+     * Owner of the <code>AppointmentBook</code>
+     */
     public AppointmentBook(String owner) {
         this.ownerName = owner;
     }
+
+    /**** Methods ****/
 
     /**
      * Returns the collection of appointments in the appointment book
