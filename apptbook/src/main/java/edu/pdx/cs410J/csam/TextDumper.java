@@ -10,6 +10,15 @@ import java.io.*;
  */
 public class TextDumper implements AppointmentBookDumper {
 
+    public TextDumper () {
+
+    }
+
+    public TextDumper(String fileName, String ownerName) {
+        this.fileName = fileName;
+        this.ownerName = ownerName;
+    }
+
     /**
      * Dumps the information of the passed <code>AppointmentBook</code> object to a text file.
      * The text file's name should be the same as the <code>AppointmentBook</code>'s owner.
@@ -22,8 +31,34 @@ public class TextDumper implements AppointmentBookDumper {
      */
     public void dump(AbstractAppointmentBook book) throws IOException {
 
+        if(this.fileName == null || this.ownerName == null) {
+            System.err.println("File name or owner name is null");
+            System.exit(1);
+        }
+
+        boolean check = new File(this.fileName).exists();
+
+        if (check) {
+            BufferedReader br = new BufferedReader(new FileReader(this.fileName));
+
+            try {
+                String owner = br.readLine();
+
+                if (owner != null && !owner.equals(this.ownerName)) {
+                    System.err.println("Specified owner on command line does not match owner of specified file");
+                    System.exit(1);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
-            PrintWriter writer = new PrintWriter(new FileOutputStream(new File(book.getOwnerName()), true));
+            PrintWriter writer = new PrintWriter(new FileOutputStream(new File(this.fileName), true));
+
+            if(!check) {
+                writer.append(this.ownerName + "\n");
+            }
 
             for (Object appointment : book.getAppointments()) {
                 String[] appointmentDetails = appointment.toString().split(" from ");
@@ -57,4 +92,7 @@ public class TextDumper implements AppointmentBookDumper {
             e.printStackTrace();
         }
     }
+
+    private String fileName;
+    private String ownerName;
 }

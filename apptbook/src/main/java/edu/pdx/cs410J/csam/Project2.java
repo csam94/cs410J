@@ -3,8 +3,7 @@ package edu.pdx.cs410J.csam;
 import edu.pdx.cs410J.AbstractAppointmentBook;
 import edu.pdx.cs410J.ParserException;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 import static jdk.nashorn.internal.objects.Global.print;
 
@@ -70,7 +69,7 @@ public class Project2 {
 
                 break;
 
-            //Required arguments + ((-README and -print) or (-fileName file))
+            //Required arguments + ((-README and -print) or (-textFile file))
             case (8):
                 ownerInd = 2;
                 descInd = 3;
@@ -79,7 +78,7 @@ public class Project2 {
 
                 if(args[0].equals("-README") && args[1].equals("-print") || args[1].equals("-README") && args[0].equals("-print")) {
                     printReadme();
-                } else if(args[0].equals("-fileName")) {
+                } else if(args[0].equals("-textFile")) {
                     fileFlag = 1;
                     boolean check = new File(args[1]).exists();
                     if(!check) {
@@ -96,18 +95,18 @@ public class Project2 {
 
                 break;
 
-            //Required arguments + -fileName file + one other option
+            //Required arguments + -textFile file + one other option
             case (9):
                 ownerInd = 3;
                 descInd = 4;
                 dateInd = 5;
                 timeInd = 6;
 
-                if(args[0].equals("-README") && args[1].equals("-fileName")) {
+                if(args[0].equals("-README") && args[1].equals("-textFile")) {
                     printReadme();
-                } else if(args[0].equals("-fileName") && args[2].equals("-README")) {
+                } else if(args[0].equals("-textFile") && args[2].equals("-README")) {
                     printReadme();
-                } else if(args[0].equals("-print") && args[1].equals("-fileName")) {
+                } else if(args[0].equals("-print") && args[1].equals("-textFile")) {
                     printFlag = 1;
                     fileFlag = 1;
                     fileInd = 2;
@@ -115,7 +114,7 @@ public class Project2 {
                     if(!check) {
                         missingFileFlag = 1;
                     }
-                } else if(args[0].equals("-fileName") && args[2].equals("-print")) {
+                } else if(args[0].equals("-textFile") && args[2].equals("-print")) {
                     printFlag = 1;
                     fileFlag = 1;
                     fileInd = 1;
@@ -123,10 +122,10 @@ public class Project2 {
                     if(!check) {
                         missingFileFlag = 1;
                     }
-                } else if(!args[0].equals("-README") && !args[0].equals("-print") && args[1].equals("-fileName")) {
+                } else if(!args[0].equals("-README") && !args[0].equals("-print") && args[1].equals("-textFile")) {
                     System.err.println("Invalid option: " + args[0] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
-                } else if(!args[2].equals("-README") && !args[2].equals("-print") && args[0].equals("-fileName")) {
+                } else if(!args[2].equals("-README") && !args[2].equals("-print") && args[0].equals("-textFile")) {
                     System.err.println("Invalid option: " + args[2] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
                 }
@@ -140,23 +139,23 @@ public class Project2 {
                 dateInd = 6;
                 timeInd = 7;
 
-                if(args[0].equals("-README") && args[1].equals("-print") && args[3].equals("-fileName")
-                        || args[0].equals("-print") && args[1].equals("-README") && args[2].equals("-fileName")
-                        || args[0].equals("-print") && args[1].equals("-fileName") && args[3].equals("-README")
-                        || args[0].equals("-README") && args[1].equals("-fileName") && args[3].equals("-print")
-                        || args[0].equals("-fileName") && args[2].equals("-print") && args[3].equals("-README")
-                        || args[0].equals("-fileName") && args[2].equals("-README") && args[3].equals("-print")) {
+                if(args[0].equals("-README") && args[1].equals("-print") && args[3].equals("-textFile")
+                        || args[0].equals("-print") && args[1].equals("-README") && args[2].equals("-textFile")
+                        || args[0].equals("-print") && args[1].equals("-textFile") && args[3].equals("-README")
+                        || args[0].equals("-README") && args[1].equals("-textFile") && args[3].equals("-print")
+                        || args[0].equals("-textFile") && args[2].equals("-print") && args[3].equals("-README")
+                        || args[0].equals("-textFile") && args[2].equals("-README") && args[3].equals("-print")) {
                     printReadme();
-                } else if(!args[0].equals("-README") && !args[0].equals("-print") && !args[0].equals("-fileName")) {
+                } else if(!args[0].equals("-README") && !args[0].equals("-print") && !args[0].equals("-textFile")) {
                     System.err.println("Invalid option: " + args[0] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
-                } else if(!args[1].equals("-README") && !args[1].equals("-print") && !args[1].equals("-fileName") && !args[0].equals("-fileName")) {
+                } else if(!args[1].equals("-README") && !args[1].equals("-print") && !args[1].equals("-textFile") && !args[0].equals("-textFile")) {
                     System.err.println("Invalid option: " + args[1] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
-                } else if(!args[2].equals("-README") && !args[2].equals("-print") && !args[2].equals("-fileName") && !args[1].equals("-fileName")) {
+                } else if(!args[2].equals("-README") && !args[2].equals("-print") && !args[2].equals("-textFile") && !args[1].equals("-textFile")) {
                     System.err.println("Invalid option: " + args[2] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
-                } else if(!args[3].equals("-README") && !args[3].equals("-print") && !args[3].equals("-fileName") && !args[2].equals("-fileName")) {
+                } else if(!args[3].equals("-README") && !args[3].equals("-print") && !args[3].equals("-textFile") && !args[2].equals("-textFile")) {
                     System.err.println("Invalid option: " + args[3] + ". Valid options are [-textFile file|-print|-README]");
                     System.exit(1);
                 }
@@ -417,11 +416,6 @@ public class Project2 {
             }
         }
 
-        if(fileFlag == 1 && !args[fileInd].equals(args[ownerInd])) {
-            System.err.println("Owner of appointment book file " + args[fileInd] + " is different than specified owner " + args[ownerInd]);
-            System.exit(1);
-        }
-
         AppointmentBook book = new AppointmentBook(args[ownerInd]);
         Appointment appointment = new Appointment(args[descInd], args[dateInd-2], args[timeInd-2], args[dateInd], args[timeInd]);
         book.addAppointment(appointment);
@@ -445,7 +439,7 @@ public class Project2 {
                     e.printStackTrace();
                 }
             } else {
-                TextParser parser = new TextParser(args[ownerInd]);
+                TextParser parser = new TextParser(args[fileInd], args[ownerInd]);
 
                 try {
                     parser.parse();

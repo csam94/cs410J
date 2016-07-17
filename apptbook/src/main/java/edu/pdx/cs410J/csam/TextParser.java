@@ -27,8 +27,9 @@ public class TextParser implements AppointmentBookParser {
      * @param fileName
      * Name of the text file to parse
      */
-    public TextParser(String fileName) {
+    public TextParser(String fileName, String ownerName) {
         this.fileName = fileName;
+        this.ownerName = ownerName;
     }
 
     /**
@@ -44,7 +45,15 @@ public class TextParser implements AppointmentBookParser {
      */
     @Override
     public AbstractAppointmentBook parse() throws ParserException {
-        if(fileName == null) {
+
+        if(this.fileName == null || this.ownerName == null) {
+            System.err.println("File name or owner name is null");
+            System.exit(1);
+        }
+
+        boolean check = new File(this.fileName).exists();
+
+        if (!check) {
             return new AppointmentBook();
         }
 
@@ -52,6 +61,17 @@ public class TextParser implements AppointmentBookParser {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
 
             AppointmentBook book = new AppointmentBook();
+
+            try {
+                String owner = br.readLine();
+
+                if(owner != null && !owner.equals(this.ownerName)) {
+                    System.err.println("Specified owner on command line does not match owner of specified file");
+                    System.exit(1);
+                }
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
             
             try {
                 String singleAppointment = br.readLine();
@@ -86,8 +106,8 @@ public class TextParser implements AppointmentBookParser {
                     for(int i = 0; i < 2; ++i) {
 
                         //Date string too long or too short
-                        if(bothDates[i].length() < 8 || bothDates[i].length() > 10) {
-                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Format is mm/dd/yyyy)");
+                        if(bothDates[i].length() < 6 || bothDates[i].length() > 8) {
+                            System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Format is mm/dd/yy)");
                             System.exit(1);
                         }
 
@@ -214,8 +234,7 @@ public class TextParser implements AppointmentBookParser {
                         }
 
                         //Year is not represented by a number
-                        if(!Character.isDigit(bothDates[i].charAt(yearInd)) || !Character.isDigit(bothDates[i].charAt(yearInd + 1))
-                                || !Character.isDigit(bothDates[i].charAt(yearInd + 2)) || !Character.isDigit(bothDates[i].charAt(yearInd + 3))) {
+                        if(!Character.isDigit(bothDates[i].charAt(yearInd)) || !Character.isDigit(bothDates[i].charAt(yearInd + 1))) {
                             System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Year is not represented by a number)");
                             System.exit(1);
                         }
@@ -224,7 +243,7 @@ public class TextParser implements AppointmentBookParser {
                         if(Character.getNumericValue(bothDates[i].charAt(dayInd)) == 2 && Character.getNumericValue(bothDates[i].charAt(dayInd + 1)) == 9
                                 && ((Character.getNumericValue(bothDates[i].charAt(0)) == 0 && Character.getNumericValue(bothDates[i].charAt(1)) == 2)
                                 || Character.getNumericValue(bothDates[i].charAt(0)) == 2)
-                                && Integer.parseInt(Character.toString(bothDates[i].charAt(yearInd + 2)) + Character.toString(bothDates[i].charAt(yearInd + 3))) % 4 != 0) {
+                                && Integer.parseInt(Character.toString(bothDates[i].charAt(yearInd)) + Character.toString(bothDates[i].charAt(yearInd + 1))) % 4 != 0) {
                             System.err.println("In file " + fileName + ": Invalid " + startOrEnd + " date (Day is Feb. 29, but year is not a leap year)");
                             System.exit(1);
                         }
@@ -321,4 +340,5 @@ public class TextParser implements AppointmentBookParser {
     }
     
     private String fileName = null;
+    private String ownerName;
 }

@@ -48,7 +48,20 @@ public class AppointmentBook<T extends AbstractAppointment> extends AbstractAppo
      */
     @Override
     public void addAppointment(AbstractAppointment newAppointment) {
-        this.appointments.add((T) newAppointment);
+        //this.appointments.add((T) newAppointment);
+
+        int i = 0;
+
+        for(AbstractAppointment a : this.appointments) {
+            if(((Appointment) newAppointment).compareTo((Appointment) a) == 1) {
+                ((ArrayList) this.appointments).add(i, (T) newAppointment);
+                return;
+            }
+
+            i++;
+        }
+
+        ((ArrayList) this.appointments).add(i, (T) newAppointment);
     }
 
     /**
